@@ -1,34 +1,37 @@
+<!--
+Donat ASCII 3D ini terinspirasi dari "donut.c" karya Andy Sloane.
+Kode telah dimodifikasi oleh Jefanniel Nathan.
+-->
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Donat Berputar</title>
   <style>
+    :root {
+      --warna-dasar: hsl(0, 100%, 70%);
+    }
+
     body {
-      background-color: #000;
-      color: #fff;
+      background: black;
+      color: white;
       font-family: monospace;
       text-align: center;
-      margin: 0;
       padding: 1rem;
     }
+
     #layar {
-      line-height: 1;
       font-size: 12px;
+      line-height: 1;
       display: inline-block;
       white-space: pre;
+      transition: color 1s linear;
+      color: var(--warna-dasar);
     }
-    .warna-0 { color: #444; }
-    .warna-1 { color: #666; }
-    .warna-2 { color: #888; }
-    .warna-3 { color: #aaa; }
-    .warna-4 { color: #0ff; }
-    .warna-5 { color: #0f0; }
-    .warna-6 { color: #ff0; }
-    .warna-7 { color: #f80; }
-    .warna-8 { color: #f00; }
-    .warna-9 { color: #f0f; }
+
+    .donat {
+      color: inherit;
+    }
   </style>
 </head>
 <body>
