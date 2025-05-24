@@ -1,60 +1,70 @@
-const canvas = document.getElementById("donut");
-const ctx = canvas.getContext("2d");
+const lebar = 80;     // Lebar layar karakter
+const tinggi = 24;    // Tinggi layar karakter
 
-let width, height;
-function resize() {
-  width = canvas.width = window.innerWidth;
-  height = canvas.height = window.innerHeight;
-}
-window.addEventListener("resize", resize);
-resize();
+let sudutA = 0;
+let sudutB = 0;
 
-let A = 0, B = 0;
+// Karakter kecerahan untuk shading
+const karakterKecerahan = ".,-~:;=!*#$@";
 
-function render() {
-  ctx.fillStyle = "black";
-  ctx.fillRect(0, 0, width, height);
+// Fungsi utama untuk render donat
+function renderDonat() {
+  const zBuffer = new Array(lebar * tinggi).fill(0);
+  const layar = new Array(lebar * tinggi).fill(' ');
 
-  const zBuffer = [];
-  const chars = [];
+  for (let j = 0; j < 6.28; j += 0.07) {       // j: sudut lingkaran luar
+    for (let i = 0; i < 6.28; i += 0.02) {     // i: sudut lingkaran dalam
+      const sinI = Math.sin(i);
+      const cosJ = Math.cos(j);
+      const sinA = Math.sin(sudutA);
+      const sinJ = Math.sin(j);
+      const cosA = Math.cos(sudutA);
+      const jarak = cosJ + 2;
+      const pembalik = 1 / (sinI * jarak * sinA + sinJ * cosA + 5);
+      const cosI = Math.cos(i);
+      const cosB = Math.cos(sudutB);
+      const sinB = Math.sin(sudutB);
 
-  for (let i = 0; i < 1760; i++) {
-    zBuffer[i] = 0;
-    chars[i] = " ";
-  }
+      const t = sinI * jarak * cosA - sinJ * sinA;
 
-  for (let j = 0; j < 6.28; j += 0.07) {
-    for (let i = 0; i < 6.28; i += 0.02) {
-      const c = Math.sin(i),
-            d = Math.cos(j),
-            e = Math.sin(A),
-            f = Math.sin(j),
-            g = Math.cos(A),
-            h = d + 2,
-            D = 1 / (c * h * e + f * g + 5),
-            l = Math.cos(i),
-            m = Math.cos(B),
-            n = Math.sin(B),
-            t = c * h * g - f * e,
-            x = Math.floor(width / 2 + 30 * D * (l * h * m - t * n)),
-            y = Math.floor(height / 2 + 15 * D * (l * h * n + t * m)),
-            o = x + width * y,
-            N = Math.floor(8 * ((f * e - c * d * g) * m - c * d * e - f * g - l * d * n));
+      const x = Math.floor(lebar / 2 + 30 * pembalik * (cosI * jarak * cosB - t * sinB));
+      const y = Math.floor(tinggi / 2 + 15 * pembalik * (cosI * jarak * sinB + t * cosB));
 
-      const charList = ".,-~:;=!*#$@";
+      const indeks = x + lebar * y;
 
-      if (y >= 0 && y < height && x >= 0 && x < width && D > zBuffer[o]) {
-        zBuffer[o] = D;
-        ctx.fillStyle = "white";
-        ctx.fillText(charList[N > 0 ? N : 0], x, y);
+      const kecerahan = Math.floor(
+        8 * ((sinJ * sinA - sinI * cosJ * cosA) * cosB
+             - sinI * cosJ * sinA - sinJ * cosA
+             - cosI * cosJ * sinB)
+      );
+
+      if (y >= 0 && y < tinggi && x >= 0 && x < lebar) {
+        if (pembalik > zBuffer[indeks]) {
+          zBuffer[indeks] = pembalik;
+          layar[indeks] = karakterKecerahan[Math.max(kecerahan, 0)];
+        }
       }
     }
   }
 
-  A += 0.04;
-  B += 0.02;
-  requestAnimationFrame(render);
+  // Gabungkan layar jadi string
+  return layar.reduce((acc, cur, i) => {
+    acc += cur;
+    if ((i + 1) % lebar === 0) acc += '\n';
+    return acc;
+  }, '');
 }
 
-ctx.font = "10px monospace";
-render();
+// Fungsi loop animasi
+function animasi() {
+  const elemenLayar = document.getElementById('layar');
+  elemenLayar.textContent = renderDonat();
+
+  sudutA += 0.07;
+  sudutB += 0.03;
+
+  requestAnimationFrame(animasi);
+}
+
+// Mulai animasi
+animasi();
