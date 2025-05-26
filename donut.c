@@ -1,3 +1,5 @@
+// Donat ASCII 3D ini terinspirasi dari "donut.c" karya Andy Sloane.
+// Kode telah dimodifikasi oleh Jefanniel Nathan.
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
